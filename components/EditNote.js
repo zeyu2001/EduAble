@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { convertToLaTeX } from '../utils/latex';
-import { getTokenOrRefresh } from '../utils/stt-token';
+import { convertToLaTeX } from '@/utils/latex';
+import { getTokenOrRefresh } from '@/utils/stt-token';
 
 import 'katex/dist/katex.min.css';
 import MarkdownLatexEditor from './MarkdownLatexEditor';
@@ -16,7 +16,7 @@ const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
 let recognizer;
 
-const EditNote = (savedTitle, savedLatex) => {
+const EditNote = ( { savedLatex, savedTitle, currentNoteId, refreshHandler } ) => {
 
   const [isListening, setIsListening] = useState(false);
   const [savedNotes, setSavedNotes] = useState([]);
@@ -42,6 +42,11 @@ const EditNote = (savedTitle, savedLatex) => {
   useEffect(() => {
     handleListen();
   }, [isListening]);
+
+  useEffect(() => {
+    setLatex(savedLatex);
+    setTitle(savedTitle);
+  }, [savedLatex, savedTitle]);
 
   const [fullTranscript, setFullTranscript] = useState('');
   const [latex, setLatex] = useState('');
@@ -80,7 +85,8 @@ const EditNote = (savedTitle, savedLatex) => {
   const handleSaveNote = () => {
     setSavedNotes([...savedNotes, latex]);
     setFullTranscript('');
-    saveNote(title, latex);
+    saveNote(title, latex, currentNoteId);
+    refreshHandler();
   };
 
   return (

@@ -17,8 +17,14 @@ const getNotes = async () => {
   return data
 }
 
-const saveNote = async (title, content) => {
-  const res = await fetch('/api/notes', {
+const saveNote = async (title, content, noteId) => {
+  
+  let apiPath = '/api/notes'
+  if (noteId && noteId !== 'data-new-note') {
+    apiPath += `/${noteId}`
+  }
+
+  const res = await fetch(apiPath, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
