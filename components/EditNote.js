@@ -17,10 +17,9 @@ const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
 let recognizer;
 
-const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler }) => {
+const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, handleNoteIdChange }) => {
 
   const [isListening, setIsListening] = useState(false);
-  const [savedNotes, setSavedNotes] = useState([]);
 
   const [showMacros, setShowMacros] = useState(false);
   const [macros, setMacros] = useState({
@@ -48,6 +47,10 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler }) =>
     setLatex(savedLatex);
     setTitle(savedTitle);
   }, [savedLatex, savedTitle]);
+
+  useEffect(() => {
+    setCurrentNoteId(selectedNoteId);
+  }, [selectedNoteId]);
 
   const [fullTranscript, setFullTranscript] = useState('');
   const [latex, setLatex] = useState('');
@@ -121,18 +124,21 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler }) =>
 
     const result = await convertToLaTeX(e.result.text, macros);
     setLatex(currLatex + '\n' + result.latex);
-    if (!currTitle) setTitle(result.title);
+    if (!currTitle) {
+      setTitle(result.title); 
+      currTitle = result.title;
+    }
 
-    const res = await saveNote(result.title, currLatex + result.latex, noteId);
+    const res = await saveNote(currTitle, currLatex + result.latex, noteId);
     if (res.id) {
-      setCurrentNoteId(res.id);
+      handleNoteIdChange(res.id);
+      refreshHandler();
       localStorage.setItem('noteId', res.id);
     }
     localStorage.setItem('lock', 0);
   }
 
   const handleSaveNote = () => {
-    setSavedNotes([...savedNotes, latex]);
     setFullTranscript('');
     saveNote(title, latex, currentNoteId);
     refreshHandler();
@@ -209,16 +215,6 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler }) =>
           <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3 font-bold text-3xl mb-3 leading-tight focus:outline-none focus:shadow-outline" />
           <MarkdownLatexEditor markdown={latex} setLatex={setLatex} />
         </div>
-      </div>
-      <div>
-        <h2 className="text-lg font-semibold mb-2">Saved Notes</h2>
-        <ul className="list-disc">
-          {savedNotes.map((n, index) => (
-            <div className="my-5 p-4 text-black bg-gray-50 rounded-lg" key={index}>
-              <MarkdownLatexEditor markdown={n} setLatex={setLatex} />
-            </div>
-          ))}
-        </ul>
       </div>
     </div>
   )

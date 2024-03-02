@@ -68,6 +68,8 @@ const AudioDropZone = ({ currentNoteId, handleRecognizing, handleRecognized }) =
     return (
       <div
         className="border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer text-center"
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
         <p>Uploaded file: {audioFile.name}</p>
       </div>

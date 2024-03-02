@@ -11,9 +11,7 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Note not found' });
     }
     res.status(200).json(note);
-  }
-  
-  if (req.method === 'PUT') {
+  } else if (req.method === 'PUT') {
     const { title, content } = req.body;
     const noteId = req.query.id;
     const userNotes = await getNotesByUserId(userId);
@@ -27,7 +25,7 @@ export default async function handler(req, res) {
 
     res.status(200).json({ id: note.id });
   } else {
-    res.setHeader('Allow', ['PUT']);
+    res.setHeader('Allow', ['GET', 'PUT']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

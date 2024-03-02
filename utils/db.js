@@ -37,6 +37,17 @@ const getNoteByNoteId = async (noteId) => {
   return note.rows[0];
 }
 
+const getSummaryByNoteId = async (noteId) => {
+  const summary = await sql`SELECT * FROM summary WHERE note_id = ${noteId}`;
+  return summary.rows[0];
+}
+
+const createSummary = async (noteId, content) => {
+  const uuid = crypto.randomUUID();
+  await sql`INSERT INTO summary (id, note_id, content) VALUES (${uuid}, ${noteId}, ${content})`;
+  return uuid;
+}
+
 const verifyPassword = async (username, password) => {
   const user = await getUserByUsername(username);
   if (user && user.password === crypto.createHash("sha256").update(password).digest("hex")) {
@@ -46,4 +57,8 @@ const verifyPassword = async (username, password) => {
   }
 }
 
-export { getUserByUsername, getUserById, createUser, getNotesByUserId, verifyPassword, createNote, updateNote, getNoteByNoteId };
+export { 
+  getUserByUsername, getUserById, createUser, verifyPassword,
+  getNotesByUserId, createNote, updateNote, getNoteByNoteId, 
+  getSummaryByNoteId, createSummary 
+};

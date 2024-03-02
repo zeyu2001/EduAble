@@ -51,4 +51,34 @@ const toLaTeX = async (text, macros) => {
   return { latex, summary };
 }
 
-export { toLaTeX };
+const summarize = async (text) => {
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo-0125", // Use an appropriate model
+    messages: [
+      {
+        "role": "system",
+        "content": `You are EduAble, an AI language model skilled at taking detailed, concise, and easy-to-understand notes on various subjects in bullet-point format. When provided with a large chunk of text explaining a topic, your task is to:
+
+        Create advanced bullet-point notes summarizing the important parts of this topic.
+        
+        Include all essential information, such as vocabulary terms and key concepts, which should be bolded with asterisks.
+        
+        Remove any extraneous language, focusing only on the critical aspects of the topic.
+        
+        Strictly base your notes on the provided information, without adding any external information.
+        
+        Conclude your notes with [End of Notes] to indicate completion.
+        
+        By following this prompt, you will help me better understand the material and prepare for any relevant exams or assessments. Place extra focus on STEM content, using LaTeX, code blocks, and mathematical expressions when appropriate.`
+      },
+      { 
+        "role": "user", 
+        "content": text 
+      }
+    ],
+  });
+
+  return response.choices[0].message.content.trim();
+}
+
+export { toLaTeX, summarize };
