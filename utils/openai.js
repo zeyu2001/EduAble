@@ -81,4 +81,34 @@ const summarize = async (text) => {
   return response.choices[0].message.content.trim();
 }
 
-export { toLaTeX, summarize };
+const makeQuiz = async (text) => {
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo-0125", // Use an appropriate model,
+    response_format: { "type": "json_object" },
+    messages: [
+      {
+        "role": "system",
+        "content": `You are EduAble, an AI language model skilled at digesting large amounts of spoken text into relevant quiz questions.
+
+        Your task is to create a set of quiz questions based on the provided text. The questions should be clear, concise, and relevant to the material, covering a range of topics and difficulty levels.
+
+        Come up with 10 questions based on the provided text, ensuring that they are well-structured and cover the most important aspects of the material.
+
+        Ensure that you respond with a JSON list of objects of the format {"questions": [{"question": "...", "choices": ["...", "...", "...", "..."], "answer": int}, ...]}, where "question" is the question text, "choices" is a list of strings representing the answer choices, and "answer" is the index of the correct answer in the zero-indexed "choices" list.
+        
+        Place extra focus on STEM content, using LaTeX, code blocks, and mathematical expressions when appropriate.
+
+        Pay extra attention to the number of backslashes in the output. Each LaTeX expression should be properly escaped with a double backslash.
+       `
+      },
+      { 
+        "role": "user", 
+        "content": text 
+      }
+    ],
+  });
+
+  return response.choices[0].message.content.trim();
+}
+
+export { toLaTeX, summarize, makeQuiz };

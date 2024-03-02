@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import EditNote from '@/components/EditNote'
 import Summary from '@/components/Summary';
+import Quiz from '@/components/Quiz';
 import Navbar from '@/components/Navbar';
 import { Sidebar, UnauthSidebar } from '@/components/SideBar';
 
@@ -18,6 +19,8 @@ const App = () => {
   const [notes, setNotes] = useState([dummy]);
   const [loggedIn, setLoggedIn] = useState(false);
   const [needsRefresh, setNeedsRefresh] = useState(false);
+
+  const [selection, setSelection] = useState('Transcript');
 
   const refreshHandler = () => {
     setNeedsRefresh(true);
@@ -58,9 +61,8 @@ const App = () => {
     }
     setSavedLatex(note.content);
     setSavedTitle(note.title);
+    setSelection('Transcript');
   };
-
-  const [selection, setSelection] = useState('Transcript');
 
   return (
     <div className="min-h-screen bg-gray-1000 py-6">
@@ -78,16 +80,26 @@ const App = () => {
                 <button className={`block py-2 px-3 ${selection === 'Summary' ? 'bg-gray-100 text-blue-700' : 'hover:bg-gray-100 hover:text-blue-700 text-blue-400'} hover:bg-transparent border-0 p-0`}
                   onClick={() => setSelection('Summary')}>Summary</button>
               </li>
+              <li>
+                <button className={`block py-2 px-3 ${selection === 'Quiz' ? 'bg-gray-100 text-blue-700' : 'hover:bg-gray-100 hover:text-blue-700 text-blue-400'} hover:bg-transparent border-0 p-0`}
+                  onClick={() => setSelection('Quiz')}>Quiz</button>
+              </li>
             </ul>
           </div>
           {
-            selection === 'Transcript' ? <EditNote
+            selection === 'Transcript' && <EditNote
               savedLatex={savedLatex}
               savedTitle={savedTitle}
               selectedNoteId={selectedItem}
               handleNoteIdChange={setSelectedItem}
               refreshHandler={refreshHandler}
-            /> : <Summary selectedNoteId={selectedItem} />
+            />
+          }
+          {
+            selection === 'Summary' &&<Summary selectedNoteId={selectedItem} />
+          }
+          {
+            selection === 'Quiz' && <Quiz selectedNoteId={selectedItem} />
           }
         </div>
       </div>
