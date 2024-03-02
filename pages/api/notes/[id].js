@@ -3,6 +3,15 @@ const crypto = require('crypto');
 
 export default async function handler(req, res) {
   const userId = req.headers.userid;
+
+  if (req.method === 'GET') {
+    const userNotes = await getNotesByUserId(userId);
+    const note = userNotes.find(note => note.id === req.query.id);
+    if (!note) {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+    res.status(200).json(note);
+  }
   
   if (req.method === 'PUT') {
     const { title, content } = req.body;

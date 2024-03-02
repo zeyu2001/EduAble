@@ -32,6 +32,11 @@ const updateNote = async (noteId, title, content) => {
   await sql`UPDATE note SET title = ${title}, content = ${content} WHERE id = ${noteId}`;
 }
 
+const getNoteByNoteId = async (noteId) => {
+  const note = await sql`SELECT * FROM note WHERE id = ${noteId}`;
+  return note.rows[0];
+}
+
 const verifyPassword = async (username, password) => {
   const user = await getUserByUsername(username);
   if (user && user.password === crypto.createHash("sha256").update(password).digest("hex")) {
@@ -41,4 +46,4 @@ const verifyPassword = async (username, password) => {
   }
 }
 
-export { getUserByUsername, getUserById, createUser, getNotesByUserId, verifyPassword, createNote, updateNote };
+export { getUserByUsername, getUserById, createUser, getNotesByUserId, verifyPassword, createNote, updateNote, getNoteByNoteId };

@@ -17,6 +17,27 @@ const getNotes = async () => {
   return data
 }
 
+const getNoteById = async (id) => {
+  const res = await fetch(`/api/notes/${id}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  })
+
+  if (res.status !== 200) {
+    withReactContent(Swal).fire({
+      icon: "error",
+      title: "Error",
+      text: 'Something went wrong. Please try again later.'
+    })
+    return
+  }
+
+  const data = await res.json()
+  return data
+}
+
 const saveNote = async (title, content, noteId) => {
   
   let apiPath = '/api/notes'
@@ -57,7 +78,6 @@ const saveNote = async (title, content, noteId) => {
         </ul>
       </div>
     })
-    return
   }
 
   const data = await res.json()
@@ -68,6 +88,8 @@ const saveNote = async (title, content, noteId) => {
       text: data.error,
     })
   }
+
+  return data
 }
 
 const updateNote = (id, title, content) => {
@@ -94,4 +116,4 @@ const updateNote = (id, title, content) => {
     })
 }
 
-export { getNotes, saveNote, updateNote };
+export { getNotes, saveNote, updateNote, getNoteById };

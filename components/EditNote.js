@@ -6,7 +6,8 @@ import { getTokenOrRefresh } from '@/utils/stt-token';
 import 'katex/dist/katex.min.css';
 import MarkdownLatexEditor from './MarkdownLatexEditor';
 import TextWithLatex from './TextWithLatex';
-import { saveNote, updateNote } from '@/utils/notes';
+import AudioDropZone from './AudioDropZone';
+import { saveNote, updateNote, getNoteById } from '@/utils/notes';
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -16,7 +17,7 @@ const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
 let recognizer;
 
-const EditNote = ( { savedLatex, savedTitle, currentNoteId, refreshHandler } ) => {
+const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler }) => {
 
   const [isListening, setIsListening] = useState(false);
   const [savedNotes, setSavedNotes] = useState([]);
@@ -51,6 +52,7 @@ const EditNote = ( { savedLatex, savedTitle, currentNoteId, refreshHandler } ) =
   const [fullTranscript, setFullTranscript] = useState('');
   const [latex, setLatex] = useState('');
   const [title, setTitle] = useState('');
+  const [currentNoteId, setCurrentNoteId] = useState(selectedNoteId);
 
   const handleListen = async () => {
 
@@ -81,6 +83,53 @@ const EditNote = ( { savedLatex, savedTitle, currentNoteId, refreshHandler } ) =
       recognizer?.close();
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem('lock', 0);
+    localStorage.removeItem('noteId');
+  }, []);
+
+  const handleRecognizing = (e) => {
+    console.log('Recognizing:', e.result.text);
+    setFullTranscript(e.result.text);
+  }
+
+  const handleRecognized = async (e) => {
+    console.log('Recognized:', e.result.text);
+
+    let currLatex;
+    let currTitle;
+
+    const lock = localStorage.getItem('lock');
+    while (lock == 1) {
+      console.log('waiting...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    // TODO: use states instead of this hack
+    localStorage.setItem('lock', 1);
+    const noteId = localStorage.getItem('noteId');
+    
+    if (!noteId || noteId === 'data-new-note') {
+      currLatex = ''
+      currTitle = ''
+    } else {
+      const data = await getNoteById(noteId);
+      currLatex = data.content
+      currTitle = data.title
+    }
+
+    const result = await convertToLaTeX(e.result.text, macros);
+    setLatex(currLatex + '\n' + result.latex);
+    if (!currTitle) setTitle(result.title);
+
+    const res = await saveNote(result.title, currLatex + result.latex, noteId);
+    if (res.id) {
+      setCurrentNoteId(res.id);
+      localStorage.setItem('noteId', res.id);
+    }
+    localStorage.setItem('lock', 0);
+  }
 
   const handleSaveNote = () => {
     setSavedNotes([...savedNotes, latex]);
@@ -142,6 +191,13 @@ const EditNote = ( { savedLatex, savedTitle, currentNoteId, refreshHandler } ) =
             Save Note
           </button>
         </div>
+      </div>
+      <div className="mb-4">
+        <AudioDropZone
+          currentNoteId={currentNoteId}
+          handleRecognizing={(e) => handleRecognizing(e)}
+          handleRecognized={(e) => handleRecognized(e)}
+        />
       </div>
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-2">Transcript</h2>

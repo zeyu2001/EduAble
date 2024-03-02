@@ -32,15 +32,16 @@ const App = () => {
         notes.unshift(dummy)
         setLoggedIn(true);
         setNotes(notes);
+
+        const selected = notes.find(note => note.id === selectedItem);
+        if (selected) handleItemSelected(selected);
       }
-      const selected = notes.find(note => note.id === selectedItem);
-      if (selected) handleItemSelected(selected);
       setNeedsRefresh(false);
     }
     fetchData();
   }, [needsRefresh]);
 
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState('data-new-note'); // 'data-new-note' is the id of the button '+ New Note'
   const [savedLatex, setSavedLatex] = useState('');
   const [savedTitle, setSavedTitle] = useState('');
 
@@ -63,7 +64,12 @@ const App = () => {
       <Navbar />
       <div className='flex'>
         {loggedIn ? <Sidebar notes={notes} onItemSelected={handleItemSelected} selectedItem={selectedItem} /> : <UnauthSidebar />}
-        <EditNote savedLatex={savedLatex} savedTitle={savedTitle} currentNoteId={selectedItem} refreshHandler={refreshHandler} />
+        <EditNote 
+          savedLatex={savedLatex} 
+          savedTitle={savedTitle} 
+          selectedNoteId={selectedItem} 
+          refreshHandler={refreshHandler} 
+        />
       </div>
     </div>
   );
