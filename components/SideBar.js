@@ -1,11 +1,11 @@
-const Sidebar = ({ items }) => {
+const Sidebar = ({ notes }) => {
   return (
-    <div className="h-full w-64 bg-gray-800 text-white">
-      <div className="p-5">My Items</div>
+    <div className="h-vh w-64 bg-gray-900 text-white">
+      <div className="p-5">My Notes</div>
       <ul>
-        {items.map((item, index) => (
-          <li key={index} className="p-2 hover:bg-gray-700 cursor-pointer">
-            {item}
+        {notes.map((note, index) => (
+          <li key={index} className="px-5 py-2 hover:bg-gray-700 cursor-pointer">
+            {note.title}
           </li>
         ))}
       </ul>
@@ -13,4 +13,17 @@ const Sidebar = ({ items }) => {
   );
 };
 
-export default Sidebar;
+const UnauthSidebar = () => {
+  return (
+    <div className="h-vh w-64 bg-gray-900 text-white">
+      <div className="p-5">My Notes</div>
+      <ul>
+        <li className="px-5 py-2 cursor-pointer">
+          You are not logged in. Log in to save notes and access them from anywhere.
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+export { Sidebar, UnauthSidebar }

@@ -84,7 +84,7 @@ const EditNote = (savedTitle, savedLatex) => {
   };
 
   return (
-    <div className="max-w-xxl mx-auto bg-gray-900 shadow-md rounded-lg p-6">
+    <div className="w-full mx-auto bg-gray-800 shadow-md p-6">
       <div className='text-center'>
         <button
           onClick={() => setShowMacros(!showMacros)}

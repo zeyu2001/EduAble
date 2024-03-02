@@ -2,6 +2,21 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Link from 'next/link'
 
+const getNotes = async () => {
+  const res = await fetch('/api/notes', {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  })
+
+  if (res.status === 401) {
+    return -1
+  }
+
+  const data = await res.json()
+  return data
+}
+
 const saveNote = async (title, content) => {
   const res = await fetch('/api/notes', {
     method: 'PUT',
@@ -73,4 +88,4 @@ const updateNote = (id, title, content) => {
     })
 }
 
-export { saveNote, updateNote };
+export { getNotes, saveNote, updateNote };

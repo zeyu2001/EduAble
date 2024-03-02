@@ -8,10 +8,13 @@ export async function middleware(request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   try {
-    console.log(token.replace('Bearer ', ''))
     const decoded = await jose.jwtVerify(token.replace('Bearer ', ''), new TextEncoder().encode(process.env.JWT_SECRET))
-    request.headers.set('userId', decoded.payload.userId)
-    return NextResponse.next()
+    request.headers.set('userid', decoded.payload.userId)
+    return NextResponse.next({
+      request:{
+        headers: request.headers
+      }
+    })
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'JWT invalid' }, { status: 401 })
