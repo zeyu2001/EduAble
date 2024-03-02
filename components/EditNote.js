@@ -67,21 +67,39 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
       const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
       recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
 
-      recognizer.recognizeOnceAsync(async (result) => {
-        if (result.reason === ResultReason.RecognizedSpeech) {
-          const transcript = result.text;
-          const { latex, title } = await convertToLaTeX(fullTranscript + ' ' + transcript, macros);
-          setFullTranscript(fullTranscript + ' ' + transcript);
-          setLatex(latex);
-          setTitle(title);
-        } else {
-          withReactContent(Swal).fire({
-            icon: "error",
-            title: "Error",
-            text: 'Speech was cancelled or could not be recognized. Ensure your microphone is working properly.'
-          })
+      recognizer.startContinuousRecognitionAsync();
+
+      recognizer.recognizing = (s, e) => {
+        console.log('Recognizing:', e.result.text);
+        handleRecognizing(e);
+      };
+
+      recognizer.recognized = async (s, e) => {
+        if (e.result.reason == ResultReason.RecognizedSpeech) {
+          console.log('Recognized:', e.result.text);
+          handleRecognized(e);
         }
-      });
+        else if (e.result.reason == ResultReason.NoMatch) {
+          console.log("NOMATCH: Speech could not be recognized.");
+        }
+      };
+
+      recognizer.canceled = (s, e) => {
+        console.log(`CANCELED: Reason=${e.reason}`);
+
+        if (e.reason == sdk.CancellationReason.Error) {
+          console.log(`"CANCELED: ErrorCode=${e.errorCode}`);
+          console.log(`"CANCELED: ErrorDetails=${e.errorDetails}`);
+          console.log("CANCELED: Did you set the speech resource key and region values?");
+        }
+
+        recognizer.stopContinuousRecognitionAsync();
+      };
+
+      recognizer.sessionStopped = (s, e) => {
+        console.log("\n    Session stopped event.");
+        recognizer.stopContinuousRecognitionAsync();
+      };
     } else {
       recognizer?.close();
     }
@@ -112,7 +130,7 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
     // TODO: use states instead of this hack
     localStorage.setItem('lock', 1);
     const noteId = localStorage.getItem('noteId');
-    
+
     if (!noteId || noteId === 'data-new-note') {
       currLatex = ''
       currTitle = ''
@@ -125,7 +143,7 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
     const result = await convertToLaTeX(e.result.text, macros);
     setLatex(currLatex + '\n' + result.latex);
     if (!currTitle) {
-      setTitle(result.title); 
+      setTitle(result.title);
       currTitle = result.title;
     }
 
