@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TailSpin } from 'react-loader-spinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons'
+import { faArrowsRotate, faCopy } from '@fortawesome/free-solid-svg-icons'
 
 import 'katex/dist/katex.min.css';
 import Markdown from 'react-markdown';
@@ -39,6 +39,16 @@ const Summary = ({ selectedNoteId }) => {
     fetchData();
   }, [selectedNoteId, regenerate]);
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(summary);
+    Swal.fire({
+      title: 'Copied!',
+      text: 'The summary has been copied to your clipboard.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+  }
+
   return (
     <div className="w-full min-h-screen mx-auto bg-gray-800 shadow-md p-6">
       <h1 className="text-2xl font-bold text-white mb-4">Summary</h1>
@@ -49,6 +59,12 @@ const Summary = ({ selectedNoteId }) => {
             className="text-lg m-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
           >
             <FontAwesomeIcon icon={faArrowsRotate} /> Regenerate
+          </button>
+          <button
+            onClick={handleCopy}
+            className="text-lg m-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
+          >
+            <FontAwesomeIcon icon={faCopy} /> Copy Markdown + LaTeX
           </button>
         </div>
       }
