@@ -1,12 +1,12 @@
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY // This is also the default, can be omitted
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 const toLaTeX = async (text, macros) => {
   const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo-0125", // Use an appropriate model
+    model: "gpt-4-0125-preview",
     messages: [
       {
         "role": "system",
@@ -35,7 +35,7 @@ const toLaTeX = async (text, macros) => {
   const latex = response.choices[0].message.content.trim();
 
   const summaryResponse = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo-0125", // Use an appropriate model
+    model: "gpt-4-0125-preview",
     messages: [
       {
         "role": "system",
@@ -53,7 +53,7 @@ const toLaTeX = async (text, macros) => {
 
 const summarize = async (text) => {
   const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo-0125", // Use an appropriate model
+    model: "gpt-4-0125-preview",
     messages: [
       {
         "role": "system",
@@ -66,8 +66,6 @@ const summarize = async (text) => {
         Remove any extraneous language, focusing only on the critical aspects of the topic.
         
         Strictly base your notes on the provided information, without adding any external information.
-        
-        Conclude your notes with [End of Notes] to indicate completion.
         
         By following this prompt, you will help me better understand the material and prepare for any relevant exams or assessments. Place extra focus on STEM content, using LaTeX, code blocks, and mathematical expressions when appropriate.`
       },
