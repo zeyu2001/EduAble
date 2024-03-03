@@ -78,6 +78,7 @@ const saveNote = async (title, content, noteId) => {
         </ul>
       </div>
     })
+    return;
   }
 
   const data = await res.json()
