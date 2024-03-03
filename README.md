@@ -15,9 +15,28 @@ This is a problem that I, and many others face everyday. Beyond that, students w
 ## What it does
 
 - Live transcription (or from an audio file) and conversion to Markdown and LaTeX. Can be used to transcribe lectures in real-time, or simply to take notes without using your hands.
+
+![Transcription](./docs/transcription.png)
+
+![Transcription from File](./docs/transcription_file.png)
+
 - Summaries generated from the transcribed notes.
 - Quizzes generated from the transcribed notes.
 
+![Summary](./docs/summary.png)
+
+![Quiz](./docs/quiz.png)
+
 ## Stack
 
-![Stack](./stack.png)
+![Stack](./docs/stack.png)
+
+## Setup
+
+This project is deployed on Vercel. The following environment variables are required: 
+
+- `JWT_SECRET`: Secret key used to sign JWT tokens for user authentication.
+- `OPENAI_API_KEY`: API key to use OpenAI GPT-4.
+- `SPEECH_KEY`: API key to use Azure AI Speech Services.
+- `SPEECH_REGION`: Region of the Azure AI Speech Services instance.
+- `POSTGRES_*`: PostgreSQL database connection details. This will be automatically configured when setting up Vercel Postgres.
