@@ -17,6 +17,8 @@ const toLaTeX = async (text, macros) => {
         When including LaTeX expressions, use $...$ for inline math and $$...$$ for display math.
         Do NOT produce any more output than necessary to cover the original human speech.
 
+        Do not add unnecessary code blocks.
+
         When encountering any of the following expressions, use the corresponding Markdown code:
         - "begin heading" → #
         - "begin subheading" → ##
@@ -67,7 +69,7 @@ const summarize = async (text) => {
         
         Strictly base your notes on the provided information, without adding any external information.
         
-        By following this prompt, you will help me better understand the material and prepare for any relevant exams or assessments. Place extra focus on STEM content, using LaTeX and mathematical expressions when appropriate.`
+        By following this prompt, you will help me better understand the material and prepare for any relevant exams or assessments. Place extra focus on STEM content, using LaTeX, code blocks, and mathematical expressions when appropriate.`
       },
       { 
         "role": "user", 
