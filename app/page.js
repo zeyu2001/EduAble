@@ -7,7 +7,11 @@ import Quiz from '@/components/Quiz';
 import Navbar from '@/components/Navbar';
 import { Sidebar, UnauthSidebar } from '@/components/SideBar';
 
-import { getNotes } from '@/utils/notes';
+import { getNotes, getChatGPTNoteById } from '@/utils/notes';
+
+const useQuery = () => {
+  return new URLSearchParams(window.location.search);
+}
 
 const App = () => {
 
@@ -55,6 +59,9 @@ const App = () => {
     console.log(note);
 
     if (note.id === 'data-new-note') {
+      if (useQuery().get('gptNoteId')) {
+        return;
+      }
       setSavedLatex('');
       setSavedTitle('');
       return;
@@ -63,6 +70,30 @@ const App = () => {
     setSavedTitle(note.title);
     setSelection('Transcript');
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      const query = useQuery();
+      const noteId = query.get('gptNoteId');
+      if (noteId) {
+        const gptNote = await getChatGPTNoteById(noteId);
+        const newNotes = notes.map(n => {
+          if (n.id === 'data-new-note') {
+            return {
+              id: n.id,
+              title: gptNote.title,
+              content: gptNote.content
+            }
+          }
+          return n;
+        });
+        setNotes(newNotes);
+        setSavedLatex(gptNote.content);
+        setSavedTitle(gptNote.title);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-1000 py-6">

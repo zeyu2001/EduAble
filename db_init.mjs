@@ -23,3 +23,5 @@ await sql`CREATE TABLE IF NOT EXISTS "summary" (
   content TEXT, 
   FOREIGN KEY (note_id) REFERENCES "note" (id)
 );`
+
+await sql`INSERT INTO "user" (id, username, password) VALUES ('af7c1fe6-d669-414e-b066-e9733f0de7a8', 'CHATGPT', 'CHATGPT');`
