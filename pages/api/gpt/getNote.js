@@ -7,5 +7,8 @@ export default async function handler(req, res) {
     const { noteId } = req.body;
     const note = await getNoteByNoteId(noteId);
     return res.status(200).json(note);
+  } else {
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
