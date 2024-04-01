@@ -2,7 +2,7 @@ import { createNote } from '@/utils/db';
 
 export default async function handler(req, res) {
   const userId = process.env.CUSTOM_GPT_USER_ID;
-  const token = req.headers.get('Authorization');
+  const token = req.headers.authorization;
   if (!token.includes(process.env.CUSTOM_GPT_API_KEY)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
