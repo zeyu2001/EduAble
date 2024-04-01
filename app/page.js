@@ -9,7 +9,7 @@ import { Sidebar, UnauthSidebar } from '@/components/SideBar';
 
 import { getNotes, getChatGPTNoteById } from '@/utils/notes';
 
-const useQuery = () => {
+const getQuery = () => {
   return new URLSearchParams(window.location.search);
 }
 
@@ -59,7 +59,7 @@ const App = () => {
     console.log(note);
 
     if (note.id === 'data-new-note') {
-      if (useQuery().get('gptNoteId')) {
+      if (getQuery().get('gptNoteId')) {
         return;
       }
       setSavedLatex('');
@@ -73,7 +73,7 @@ const App = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const query = useQuery();
+      const query = getQuery();
       const noteId = query.get('gptNoteId');
       if (noteId) {
         const gptNote = await getChatGPTNoteById(noteId);
