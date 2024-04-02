@@ -9,8 +9,8 @@ export default async function handler(req, res) {
   
   if (req.method === 'POST') {
     const { title, content } = req.body;
-    const note = await createNote(userId, title, content);
-    return res.status(200).json({ id: note });
+    const noteId = await createNote(userId, title, content);
+    return res.status(200).json({ url: `https://notes.eduable.app/?gptNoteId=${noteId}` });
   } else {
     res.setHeader('Allow', ['POST']);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
