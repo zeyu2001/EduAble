@@ -18,7 +18,7 @@ const createUser = async (username, password) => {
 }
 
 const getNotesByUserId = async (userId) => {
-  const notes = await sql`SELECT * FROM note WHERE user_id = ${userId}`;
+  const notes = await sql`SELECT * FROM note WHERE user_id = ${userId} ORDER BY last_updated DESC`;
   return notes.rows;
 }
 
@@ -29,7 +29,7 @@ const createNote = async (userId, title, content) => {
 }
 
 const updateNote = async (noteId, title, content) => {
-  await sql`UPDATE note SET title = ${title}, content = ${content} WHERE id = ${noteId}`;
+  await sql`UPDATE note SET title = ${title}, content = ${content}, last_updated = CURRENT_TIMESTAMP WHERE id = ${noteId}`;
 }
 
 const getNoteByNoteId = async (noteId) => {
