@@ -111,4 +111,40 @@ const makeQuiz = async (text) => {
   return response.choices[0].message.content.trim();
 }
 
-export { toLaTeX, summarize, makeQuiz };
+const convertImage = async (imageUrl) => {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4-vision-preview",
+    messages: [
+      {
+        "role": "system",
+        "content": `You are an anything-to-Markdown/LaTeX converter. The user will provide an image, PDF, or text for you to convert. 
+        Convert it into Markdown and LaTeX code. Provide a response with ONLY the relevant Markdown.
+        
+        Pay special attention to mathematical expressions, ensuring they are accurately represented in LaTeX syntax.
+        Consider the context to distinguish between homophones and terms with multiple interpretations. 
+
+        Your response should NOT contain any code blocks.
+        
+        Your response should provide clear, correct Markdown and LaTeX code that reflects the complexity and precision of the input.
+        When including LaTeX expressions, use $...$ for inline math and $$...$$ for display math. Do NOT produce any more output than necessary to cover the original input.`
+      },
+      {
+        "role": "user",
+        "content": [
+          {"type": "text", "text": "What's in this image?"},
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": imageUrl
+            },
+          },
+        ],
+      }
+    ],
+  });
+
+  const latex = response.choices[0].message.content.trim();
+  return { latex };
+}
+
+export { toLaTeX, summarize, makeQuiz, convertImage };

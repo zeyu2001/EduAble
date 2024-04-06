@@ -1,4 +1,4 @@
-async function convertToLaTeX(text, macros) {
+const convertToLaTeX = async (text, macros) => {
   const response = await fetch('/api/latex', {
     method: 'POST',
     headers: {
@@ -15,7 +15,24 @@ async function convertToLaTeX(text, macros) {
   return { latex: data.latex, title: data.summary };
 }
 
-function parseLatex(text) {
+const convertImage = async (image) => {
+  const response = await fetch('/api/image', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ image }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to convert image to LaTeX');
+  }
+
+  const data = await response.json();
+  return { latex: data.latex };
+}
+
+const parseLatex = (text) => {
   const latexPattern = /\$(.*?)\$/g;
   let parts = [];
   let lastIndex = 0;
@@ -40,5 +57,6 @@ function parseLatex(text) {
 
 export {
   convertToLaTeX,
-  parseLatex
+  parseLatex,
+  convertImage,
 }

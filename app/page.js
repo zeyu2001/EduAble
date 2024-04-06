@@ -5,7 +5,10 @@ import EditNote from '@/components/EditNote'
 import Summary from '@/components/Summary';
 import Quiz from '@/components/Quiz';
 import Navbar from '@/components/Navbar';
+import { useExtendedState } from '@/utils/extendedState';
 import { Sidebar, UnauthSidebar } from '@/components/SideBar';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 import { getNotes, getChatGPTNoteById } from '@/utils/notes';
 
@@ -52,11 +55,20 @@ const App = () => {
   const [selectedItem, setSelectedItem] = useState('data-new-note'); // 'data-new-note' is the id of the button '+ New Note'
   const [savedLatex, setSavedLatex] = useState('');
   const [savedTitle, setSavedTitle] = useState('');
+  const [lockNoteId, setLockNoteId, getLockNoteId] = useExtendedState(null);
 
-  const handleItemSelected = (note) => {
+  const handleItemSelected = async (note) => {
+
+    if (await getLockNoteId() && await getLockNoteId() !== note.id) {
+      withReactContent(Swal).fire({
+        icon: "error",
+        title: "Please wait",
+        text: "You are currently transcribing something in this note. Please wait for it to finish before switching."
+      });
+      return
+    }
 
     setSelectedItem(note.id);
-    console.log(note);
 
     if (note.id === 'data-new-note') {
       if (getQuery().get('gptNoteId')) {
@@ -124,6 +136,7 @@ const App = () => {
               selectedNoteId={selectedItem}
               handleNoteIdChange={setSelectedItem}
               refreshHandler={refreshHandler}
+              setLockNoteId={setLockNoteId}
             />
           }
           {

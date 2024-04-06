@@ -6,18 +6,15 @@ import { getTokenOrRefresh } from '@/utils/stt-token';
 import 'katex/dist/katex.min.css';
 import MarkdownLatexEditor from './MarkdownLatexEditor';
 import TextWithLatex from './TextWithLatex';
-import AudioDropZone from './AudioDropZone';
+import FileDropZone from './FileDropZone';
 import { saveNote, updateNote, getNoteById } from '@/utils/notes';
-
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-
+import { useExtendedState } from '@/utils/extendedState';
 import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
 const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 
 let recognizer;
 
-const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, handleNoteIdChange }) => {
+const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, handleNoteIdChange, setLockNoteId }) => {
 
   const [isListening, setIsListening] = useState(false);
 
@@ -52,10 +49,12 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
     setCurrentNoteId(selectedNoteId);
   }, [selectedNoteId]);
 
-  const [fullTranscript, setFullTranscript] = useState('');
-  const [latex, setLatex] = useState('');
-  const [title, setTitle] = useState('');
-  const [currentNoteId, setCurrentNoteId] = useState(selectedNoteId);
+  const [fullTranscript, setFullTranscript, getFullTranscript] = useExtendedState('');
+  const [latex, setLatex, getLatex] = useExtendedState('');
+  const [title, setTitle, getTitle] = useExtendedState('');
+  const [currentNoteId, setCurrentNoteId, getCurrentNoteId] = useExtendedState(selectedNoteId);
+
+  const [lock, setLock, getLock] = useExtendedState(0);
 
   const handleListen = async () => {
 
@@ -99,16 +98,12 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
       recognizer.sessionStopped = (s, e) => {
         console.log("\n    Session stopped event.");
         recognizer.stopContinuousRecognitionAsync();
+        setLockNoteId(null);
       };
     } else {
       recognizer?.close();
     }
   };
-
-  useEffect(() => {
-    localStorage.setItem('lock', 0);
-    localStorage.removeItem('noteId');
-  }, []);
 
   const handleRecognizing = (e) => {
     console.log('Recognizing:', e.result.text);
@@ -118,42 +113,27 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
   const handleRecognized = async (e) => {
     console.log('Recognized:', e.result.text);
 
-    let currLatex;
-    let currTitle;
-
-    const lock = localStorage.getItem('lock');
-    while (lock == 1) {
+    while (await getLock() == 1) {
       console.log('waiting...');
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    // TODO: use states instead of this hack
-    localStorage.setItem('lock', 1);
-    const noteId = localStorage.getItem('noteId');
-
-    if (!noteId || noteId === 'data-new-note') {
-      currLatex = ''
-      currTitle = ''
-    } else {
-      const data = await getNoteById(noteId);
-      currLatex = data.content
-      currTitle = data.title
-    }
-
+    await setLock(1);
+    const noteId = await getCurrentNoteId();
+    await setLockNoteId(noteId);
     const result = await convertToLaTeX(e.result.text, macros);
-    setLatex(currLatex + '\n' + result.latex);
-    if (!currTitle) {
-      setTitle(result.title);
-      currTitle = result.title;
-    }
 
-    const res = await saveNote(currTitle, currLatex + result.latex, noteId);
+    const currLatex = await getLatex();
+    const currTitle = await getTitle();
+    await setLatex(currLatex + '\n\n' + result.latex); // append to existing LaTeX
+    await setTitle(currTitle || result.title); // only set title if it's not already set
+
+    const res = await saveNote(await getTitle(), await getLatex(), noteId);
     if (res.id) {
       handleNoteIdChange(res.id);
       refreshHandler();
-      localStorage.setItem('noteId', res.id);
     }
-    localStorage.setItem('lock', 0);
+    await setLock(0);
   }
 
   const handleSaveNote = () => {
@@ -217,10 +197,11 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
         </div>
       </div>
       <div className="mb-4">
-        <AudioDropZone
+        <FileDropZone
           currentNoteId={currentNoteId}
           handleRecognizing={(e) => handleRecognizing(e)}
           handleRecognized={(e) => handleRecognized(e)}
+          handleImageConverted={(imgLatex => setLatex(currLatex => currLatex + '\n\n' + imgLatex))}
         />
       </div>
       <div className="mb-4">
