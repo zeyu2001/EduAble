@@ -98,7 +98,6 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
       recognizer.sessionStopped = (s, e) => {
         console.log("\n    Session stopped event.");
         recognizer.stopContinuousRecognitionAsync();
-        setLockNoteId(null);
       };
     } else {
       recognizer?.close();
@@ -120,17 +119,17 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
 
     await setLock(1);
     const noteId = await getCurrentNoteId();
-    await setLockNoteId(noteId);
     const result = await convertToLaTeX(e.result.text, macros);
 
     const currLatex = await getLatex();
     const currTitle = await getTitle();
-    await setLatex(currLatex + '\n\n' + result.latex); // append to existing LaTeX
+    await setLatex(currLatex ? currLatex + '\n\n' + result.latex : result.latex); // append to existing LaTeX
     await setTitle(currTitle || result.title); // only set title if it's not already set
 
     const res = await saveNote(await getTitle(), await getLatex(), noteId);
     if (res.id) {
       handleNoteIdChange(res.id);
+      setLockNoteId(id => id === -1 ? id : res.id);
       refreshHandler();
     }
     await setLock(0);
@@ -201,7 +200,8 @@ const EditNote = ({ savedLatex, savedTitle, selectedNoteId, refreshHandler, hand
           currentNoteId={currentNoteId}
           handleRecognizing={(e) => handleRecognizing(e)}
           handleRecognized={(e) => handleRecognized(e)}
-          handleImageConverted={(imgLatex => setLatex(currLatex => currLatex + '\n\n' + imgLatex))}
+          handleImageConverted={(imgLatex => setLatex(currLatex => currLatex ? currLatex + '\n\n' + imgLatex : imgLatex))}
+          setLockNoteId={setLockNoteId}
         />
       </div>
       <div className="mb-4">

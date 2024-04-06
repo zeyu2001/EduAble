@@ -51,7 +51,7 @@ const sttFromFile = async (audioFile, currentNoteId, handleRecognizing, handleRe
 
 }
 
-const FileDropZone = ({ currentNoteId, handleRecognizing, handleRecognized, handleImageConverted }) => {
+const FileDropZone = ({ currentNoteId, handleRecognizing, handleRecognized, handleImageConverted, setLockNoteId }) => {
   const [file, setFile] = useState(null);
   const [done, setDone] = useState(true);
 
@@ -70,7 +70,7 @@ const FileDropZone = ({ currentNoteId, handleRecognizing, handleRecognized, hand
     if (fileType === 'audio') {
       setFile(file);
       setDone(false);
-      sttFromFile(file, currentNoteId, handleRecognizing, handleRecognized, () => setDone(true));
+      sttFromFile(file, currentNoteId, handleRecognizing, handleRecognized, () => { setLockNoteId(-1); setDone(true) });
     }
     else if (fileType === 'image') {
       setFile(file);

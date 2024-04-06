@@ -39,7 +39,6 @@ const App = () => {
       if (notes === -1) {
         setLoggedIn(false);
       } else {
-        notes.reverse()
         notes.unshift(dummy)
         setLoggedIn(true);
         setNotes(notes);
@@ -59,7 +58,7 @@ const App = () => {
 
   const handleItemSelected = async (note) => {
 
-    if (await getLockNoteId() && await getLockNoteId() !== note.id) {
+    if (await getLockNoteId() && await getLockNoteId() !== -1 && await getLockNoteId() !== note.id) {
       withReactContent(Swal).fire({
         icon: "error",
         title: "Please wait",
