@@ -108,7 +108,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-1000 py-6">
-      <Navbar />
+      <Navbar loggedIn={loggedIn} />
       <div className='flex'>
         {loggedIn ? <Sidebar notes={notes} onItemSelected={handleItemSelected} selectedItem={selectedItem} /> : <UnauthSidebar />}
         <div className="w-full flex flex-wrap items-center justify-between mx-auto">
