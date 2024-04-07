@@ -50,8 +50,8 @@ const Summary = ({ selectedNoteId }) => {
   }
 
   return (
-    <div className="w-full min-h-screen mx-auto bg-gray-800 shadow-md p-6">
-      <h1 className="text-2xl font-bold text-white mb-4">Summary</h1>
+    <div className="w-full min-h-screen mx-auto bg-gray-100 dark:bg-gray-800 shadow-md p-6">
+      <h1 className="text-2xl font-bold dark:text-white mb-4">Summary</h1>
       {
         selectedNoteId !== 'data-new-note' && <div>
           <button

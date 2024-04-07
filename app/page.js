@@ -34,6 +34,14 @@ const App = () => {
   }
 
   useEffect(() => {
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  })
+
+  useEffect(() => {
     async function fetchData() {
       const notes = await getNotes();
       if (notes === -1) {
@@ -107,23 +115,23 @@ const App = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-1000 py-6">
+    <div className="min-h-screen bg-white dark:bg-black text-blue-800 dark:text-white py-6">
       <Navbar loggedIn={loggedIn} />
       <div className='flex'>
         {loggedIn ? <Sidebar notes={notes} onItemSelected={handleItemSelected} selectedItem={selectedItem} /> : <UnauthSidebar />}
         <div className="w-full flex flex-wrap items-center justify-between mx-auto">
           <div className="hidden w-full md:block md:w-auto" id="navbar-default">
-            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 bg-gray-50 md:flex-row rtl:space-x-reverse md:mt-0 md:border-0 bg-gray-800 md:bg-gray-900 border-gray-700">
+            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 bg-gray-50 md:flex-row rtl:space-x-reverse md:mt-0 md:border-0 bg-gray-200 dark:bg-gray-900 border-gray-700">
               <li>
-                <button className={`block py-2 px-3 ${selection === 'Transcript' ? 'bg-gray-100 text-blue-700' : 'hover:bg-gray-100 hover:text-blue-700 text-blue-400'} hover:bg-transparent border-0 p-0`}
+                <button className={`block py-2 px-3 ${selection === 'Transcript' ? 'bg-gray-100 text-blue-700' : 'hover:text-blue-700 dark:hover:text-blue-700 text-blue-500 dark:text-blue-400 hover:bg-transparent'} border-0 p-0`}
                   onClick={() => setSelection('Transcript')}>Transcript</button>
               </li>
               <li>
-                <button className={`block py-2 px-3 ${selection === 'Summary' ? 'bg-gray-100 text-blue-700' : 'hover:bg-gray-100 hover:text-blue-700 text-blue-400'} hover:bg-transparent border-0 p-0`}
+                <button className={`block py-2 px-3 ${selection === 'Summary' ? 'bg-gray-100 text-blue-700' : 'hover:text-blue-700 dark:hover:text-blue-700 text-blue-500 dark:text-blue-400 hover:bg-transparent'} border-0 p-0`}
                   onClick={() => setSelection('Summary')}>Summary</button>
               </li>
               <li>
-                <button className={`block py-2 px-3 ${selection === 'Quiz' ? 'bg-gray-100 text-blue-700' : 'hover:bg-gray-100 hover:text-blue-700 text-blue-400'} hover:bg-transparent border-0 p-0`}
+                <button className={`block py-2 px-3 ${selection === 'Quiz' ? 'bg-gray-100 text-blue-700' : 'hover:text-blue-700 dark:hover:text-blue-700 text-blue-500 dark:text-blue-400 hover:bg-transparent'} border-0 p-0`}
                   onClick={() => setSelection('Quiz')}>Quiz</button>
               </li>
             </ul>

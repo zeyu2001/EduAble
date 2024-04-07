@@ -8,7 +8,7 @@ const MarkdownLatexEditor = ({markdown, setLatex}) => {
   return (
     <div className="flex">
       <textarea
-        className="border-2 border-gray-200 p-2 w-full h-screen"
+        className="bg-gray-50 border-2 border-gray-200 p-2 w-full h-screen"
         value={markdown}
         onChange={(e) => setLatex(e.target.value)}
       />

@@ -49,7 +49,7 @@ const QuizComponent = ({ questions }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 rounded-2xl flex flex-col justify-center items-center">
+    <div className="min-h-screen flex flex-col justify-center items-center">
       <div className='mb-8'>
         <div className='text-xl font-semibold mb-2'>
           <span>Question {currentQuestion + 1}</span>/{questions.length}
@@ -109,8 +109,8 @@ const Quiz = ({ selectedNoteId }) => {
   }, [selectedNoteId, regenerate]);
 
   return (
-    <div className="w-full min-h-screen mx-auto bg-gray-800 shadow-md p-6">
-      <h1 className="text-2xl font-bold text-white mb-4">Quiz</h1>
+    <div className="w-full min-h-screen mx-auto bg-gray-200 dark:bg-gray-800 shadow-md p-6">
+      <h1 className="text-2xl font-bold dark:text-white mb-4">Quiz</h1>
       {
         error && <p>{error}</p>
       }
