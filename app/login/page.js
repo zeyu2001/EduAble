@@ -53,8 +53,8 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-black text-white">
-      <div className="p-10 bg-gray-900 rounded-lg shadow-lg" >
+    <div className="flex items-center justify-center h-screen bg-gray-200 dark:bg-black text-blue-800 dark:text-white">
+      <div className="p-10 bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg">
         <h2 className="mb-6 text-3xl font-bold text-center">Login</h2>
         <div className="mb-4">
           <GSignIn />
@@ -63,11 +63,11 @@ const LoginForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block mb-2 text-sm font-bold">Email</label>
-            <input type="email" id="email" name="email" onChange={handleChange} value={user.email} className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" required />
+            <input type="email" id="email" name="email" onChange={handleChange} value={user.email} className="w-full px-3 py-2 bg-white leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" required />
           </div>
           <div className="mb-6">
             <label htmlFor="password" className="block mb-2 text-sm font-bold">Password</label>
-            <input type="password" id="password" name="password" onChange={handleChange} value={user.password} className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" required />
+            <input type="password" id="password" name="password" onChange={handleChange} value={user.password} className="w-full px-3 py-2  bg-white  leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" required />
           </div>
           <button type="submit" className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline">
             Login
@@ -80,7 +80,7 @@ const LoginForm = () => {
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-gray-1000 p-6">
+    <div className="min-h-screen bg-gray-100 dark:bg-black py-6">
       <div className="text-center">
         <Navbar />
         <LoginForm />
