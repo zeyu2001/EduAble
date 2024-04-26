@@ -17,7 +17,7 @@ const toLaTeX = async (text, macros) => {
         When including LaTeX expressions, use $...$ for inline math and $$...$$ for display math.
         Do NOT produce any more output than necessary to cover the original human speech.
 
-        Do not add unnecessary code blocks.
+        Do not add unnecessary code blocks. If there are no relevant mathematical expressions, just return the text as-is.
 
         When encountering any of the following expressions, use the corresponding Markdown code:
         - "begin heading" → #
